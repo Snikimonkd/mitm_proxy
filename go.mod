@@ -1,4 +1,4 @@
-module github.com/yletamitlu/proxy
+module github.com/Snikimonkd/mitm_proxy
 
 go 1.15
 

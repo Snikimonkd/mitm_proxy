@@ -165,24 +165,27 @@ func (pd *ProxyDelivery) ScanRequest(writer http.ResponseWriter, request *http.R
 	scanner := bufio.NewScanner(f)
 	scanner.Split(bufio.ScanWords)
 
-	for scanner.Scan() {
-		buf := "/" + scanner.Text()
-		request.URL.Path += buf
+	path := request.URL.Path
 
-		response, err := pd.proxyUcase.HandleHttpRequest(writer, request)
-		if err != nil {
-			logrus.Error(err)
+	for scanner.Scan() {
+		if path[len(path)-1] == '/' {
+			request.URL.Path = path + scanner.Text()
+		} else {
+			request.URL.Path = path + "/" + scanner.Text()
 		}
 
-		fmt.Println(response)
+		response, err := pd.proxyUcase.DoHttpRequest(request)
+		if err != nil {
+			logrus.Info(err)
+		}
 
-		/*if strings.Contains(response, ":root") {
-			_, err = io.Copy(writer, strings.NewReader("Request contains command injection\n"))
+		if response.StatusCode != 404 {
+			_, err = io.Copy(writer, strings.NewReader(request.URL.Path+"\n"))
 			if err != nil {
 				logrus.Error(err)
 			}
-			return nil
-		}*/
+		}
+
 	}
 
 	return nil
