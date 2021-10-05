@@ -5,11 +5,11 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	hs "github.com/Snikimonkd/mitm_proxy/internal/https"
 	"github.com/Snikimonkd/mitm_proxy/internal/models"
 	"github.com/Snikimonkd/mitm_proxy/internal/proxy"
 	"github.com/Snikimonkd/mitm_proxy/internal/utils"
 	"github.com/sirupsen/logrus"
-	hs "github.com/yletamitlu/proxy/internal/https"
 )
 
 type ProxyUcase struct {
