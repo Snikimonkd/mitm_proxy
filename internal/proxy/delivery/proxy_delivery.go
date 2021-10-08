@@ -130,28 +130,6 @@ func (pd *ProxyDelivery) ScanRequestHandler(writer http.ResponseWriter, request 
 	}
 }
 
-func gryz() {
-	f, err := os.Open("paths.txt")
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	scanner.Split(bufio.ScanWords)
-
-	for scanner.Scan() {
-		buf := "/" + scanner.Text()
-		fmt.Println(buf)
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println(err)
-	}
-}
-
 func (pd *ProxyDelivery) ScanRequest(writer http.ResponseWriter, request *http.Request) error {
 	f, err := os.Open("paths.txt")
 
@@ -174,13 +152,15 @@ func (pd *ProxyDelivery) ScanRequest(writer http.ResponseWriter, request *http.R
 			request.URL.Path = path + "/" + scanner.Text()
 		}
 
+		fmt.Println(request.URL.Path)
+
 		response, err := pd.proxyUcase.DoHttpRequest(request)
 		if err != nil {
 			logrus.Info(err)
 		}
 
 		if response.StatusCode != 404 {
-			_, err = io.Copy(writer, strings.NewReader(request.URL.Path+"\n"))
+			_, err = io.Copy(writer, strings.NewReader(request.URL.Path+"\t"+response.Status+"\n"))
 			if err != nil {
 				logrus.Error(err)
 			}
